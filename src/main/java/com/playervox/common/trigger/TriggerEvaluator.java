@@ -194,25 +194,27 @@ public class TriggerEvaluator {
             if (!cond.get("gun_id").getAsString().equals(extraString)) return false;
         }
 
-        // item（pickup trigger）：精确物品ID或 # 前缀的 Tag
+        // item（pickup / draw trigger）：支持单个字符串、标签，或多个 ID 的数组
         if (cond.has("item")) {
-            String itemCond = cond.get("item").getAsString();
             if (extraString == null) return false;
-            if (itemCond.startsWith("#")) {
-                // Tag 匹配
-                String tagId = itemCond.substring(1);
-                net.minecraft.resources.ResourceLocation tagLoc = new net.minecraft.resources.ResourceLocation(tagId);
-                net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag =
-                        net.minecraft.tags.TagKey.create(
-                                net.minecraft.core.registries.Registries.ITEM,
-                                tagLoc
-                        );
-                net.minecraft.resources.ResourceLocation itemLoc = new net.minecraft.resources.ResourceLocation(extraString);
-                var holderOpt = net.minecraftforge.registries.ForgeRegistries.ITEMS.getHolder(itemLoc);
-                if (holderOpt.isEmpty() || !holderOpt.get().is(tag)) return false;
+
+            com.google.gson.JsonElement itemElement = cond.get("item");
+
+            if (itemElement.isJsonArray()) {
+                // 数组形式：任意一个匹配即通过
+                boolean matched = false;
+                for (com.google.gson.JsonElement el : itemElement.getAsJsonArray()) {
+                    if (matchSingleItemCondition(el.getAsString(), extraString)) {
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) return false;
             } else {
-                // 精确 ID 匹配
-                if (!itemCond.equals(extraString)) return false;
+                // 单个字符串（精确 ID 或 #标签）
+                if (!matchSingleItemCondition(itemElement.getAsString(), extraString)) {
+                    return false;
+                }
             }
         }
 
@@ -228,5 +230,25 @@ public class TriggerEvaluator {
         if (a == b) return true;
         if (a == null || b == null) return false;
         return a.toString().equals(b.toString());
+    }
+
+    /** 判断单个 item 条件字符串是否匹配当前物品 ID（支持精确 ID 和 #标签） */
+    private static boolean matchSingleItemCondition(String itemCond, String extraString) {
+        if (itemCond.startsWith("#")) {
+            // Tag 匹配
+            String tagId = itemCond.substring(1);
+            net.minecraft.resources.ResourceLocation tagLoc = new net.minecraft.resources.ResourceLocation(tagId);
+            net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag =
+                    net.minecraft.tags.TagKey.create(
+                            net.minecraft.core.registries.Registries.ITEM,
+                            tagLoc
+                    );
+            net.minecraft.resources.ResourceLocation itemLoc = new net.minecraft.resources.ResourceLocation(extraString);
+            var holderOpt = net.minecraftforge.registries.ForgeRegistries.ITEMS.getHolder(itemLoc);
+            return holderOpt.isPresent() && holderOpt.get().is(tag);
+        } else {
+            // 精确 ID 匹配
+            return itemCond.equals(extraString);
+        }
     }
 }

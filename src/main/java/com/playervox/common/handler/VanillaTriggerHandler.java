@@ -26,6 +26,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Map;
@@ -92,6 +95,22 @@ public class VanillaTriggerHandler {
         ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);
         String itemIdStr = itemId != null ? itemId.toString() : "";
         fireForPlayer(player, "pickup", null, 0, null, itemIdStr);
+    }
+
+    @SubscribeEvent
+    public static void onDraw(LivingEquipmentChangeEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        // 只关心主手变化
+        if (event.getSlot() != EquipmentSlot.MAINHAND) return;
+        // 空手不触发
+        if (event.getTo().isEmpty()) return;
+        // 物品没有实际变化也不触发（防止重复）
+        if (ItemStack.isSameItemSameTags(event.getFrom(), event.getTo())) return;
+
+        Item item = event.getTo().getItem();
+        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);
+        String itemIdStr = itemId != null ? itemId.toString() : "";
+        fireForPlayer(player, "draw", null, 0, null, itemIdStr);
     }
 
     @SubscribeEvent

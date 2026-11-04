@@ -1,5 +1,6 @@
 package com.playervox.common.network;
 
+import com.playervox.client.ClientVoxSoundTracker;
 import com.playervox.client.SubtitleOverlay;
 import com.playervox.client.VoxPositionedSoundInstance;
 import com.playervox.client.VoxSoundInstance;
@@ -15,9 +16,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -33,10 +31,6 @@ public class PacketPlaySound {
     private final String subtitle;   // nullable
     private final String playerName; // 发声玩家的游戏名
     private final double posX, posY, posZ; // 实体坐标，用于 entity==null 时的 fallback
-
-    /** 客户端按实体 ID 跟踪正在播放的 VOX 语音，每个实体独立打断 */
-    @OnlyIn(Dist.CLIENT)
-    private static final Map<Integer, SoundInstance> activeVoxSounds = new ConcurrentHashMap<>();
 
     public PacketPlaySound(ResourceLocation sound, int entityId, float volume, float pitch,
                            String subtitle, String playerName,
@@ -94,13 +88,13 @@ public class PacketPlaySound {
         if (mc.level == null) return;
 
         // 打断该实体正在播放的旧 VOX 语音（不影响其他实体的语音）
-        SoundInstance old = activeVoxSounds.get(pkt.entityId);
+        SoundInstance old = ClientVoxSoundTracker.get(pkt.entityId);
         if (old != null) {
             mc.getSoundManager().stop(old);
         }
 
         // 清理已停止播放的条目，防止 Map 无限增长
-        cleanupStopped(mc);
+        ClientVoxSoundTracker.cleanupStopped(mc);
 
         Entity entity = mc.level.getEntity(pkt.entityId);
 
@@ -120,7 +114,7 @@ public class PacketPlaySound {
             );
         }
 
-        activeVoxSounds.put(pkt.entityId, instance);
+        ClientVoxSoundTracker.put(pkt.entityId, instance);
         mc.getSoundManager().play(instance);
 
         // 字幕处理
@@ -134,17 +128,5 @@ public class PacketPlaySound {
 
         com.playervox.PlayerVoxMod.LOGGER.info("PlayerVOX: 客户端播放 {} (实体ID={}, 坐标=[{},{},{}])",
                 pkt.sound, pkt.entityId, pkt.posX, pkt.posY, pkt.posZ);
-    }
-
-    /** 清理已停止播放的条目，防止 Map 无限增长 */
-    @OnlyIn(Dist.CLIENT)
-    private static void cleanupStopped(Minecraft mc) {
-        Iterator<Map.Entry<Integer, SoundInstance>> it = activeVoxSounds.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Integer, SoundInstance> entry = it.next();
-            if (!mc.getSoundManager().isActive(entry.getValue())) {
-                it.remove();
-            }
-        }
     }
 }
