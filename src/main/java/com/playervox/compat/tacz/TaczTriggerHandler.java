@@ -38,6 +38,10 @@ public class TaczTriggerHandler {
     public static void onDraw(GunDrawEvent event) {
         if (event.getLogicalSide() != LogicalSide.SERVER) return;
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        // 收枪 / 空手不触发
+        if (event.getCurrentGunItem() == null || event.getCurrentGunItem().isEmpty()) return;
+
         String gunId = getGunId(event.getCurrentGunItem());
         VanillaTriggerHandler.fireForPlayer(player, "tacz_draw", null, 0, null, gunId);
     }

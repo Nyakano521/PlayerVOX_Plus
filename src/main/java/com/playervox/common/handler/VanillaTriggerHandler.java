@@ -232,6 +232,11 @@ public class VanillaTriggerHandler {
         if (packId == null || packId.isEmpty()) return; // 未选择语音包，不触发
 
         long currentTick = player.level().getGameTime();
+
+// death 拥有特权，可打断全局占用；其他触发器在占用期间直接忽略
+        boolean isDeath = "death".equals(trigger);
+        if (!isDeath && CooldownTracker.isGloballyLocked(player.getUUID(), currentTick)) return;
+
         if (CooldownTracker.isOnCooldown(player.getUUID(), trigger, currentTick)) return;
 
         TriggerEvaluator.Result result = TriggerEvaluator.evaluate(
@@ -239,14 +244,19 @@ public class VanillaTriggerHandler {
         );
         if (result == null) return;
 
-        // 冷却至少 3 tick 防抖，优先使用 JSON 定义的冷却
+// 冷却至少 3 tick 防抖，优先使用 JSON 定义的冷却
         int cooldown = Math.max(3, result.cooldownTicks());
         CooldownTracker.setCooldown(player.getUUID(), trigger, currentTick, cooldown);
 
-        // 如果是 once 组，标记已触发
+// 写入全局占用，避免其他触发器立刻抢播
+        CooldownTracker.setGlobalLock(player.getUUID(), currentTick, cooldown);
+
+// 如果是 once 组，标记已触发
         if (result.once()) {
             OnceTracker.markTriggered(player.getUUID(), trigger, result.conditionsKey());
         }
+
+// ……后面原来的 volume / packet / send 代码保持不变……
 
         float volume = 1.0f;
         float pitch = 1.0f;

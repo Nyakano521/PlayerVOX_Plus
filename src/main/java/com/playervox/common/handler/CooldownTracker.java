@@ -6,11 +6,15 @@ import java.util.UUID;
 
 /**
  * 服务端冷却状态：UUID → (trigger大类 → 冷却到期的游戏刻)
+ * 另有全局占用：任意语音播出后，短时间内阻止其他触发器抢播。
  * 重登不保留冷却（玩家断线时移除）。
  */
 public class CooldownTracker {
 
     private static final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
+
+    /** 全局占用：UUID → 占用到期的游戏刻 */
+    private static final Map<UUID, Long> globalLock = new HashMap<>();
 
     /** 检查指定玩家的 trigger 是否在冷却中 */
     public static boolean isOnCooldown(UUID playerUUID, String trigger, long currentTick) {
@@ -34,8 +38,25 @@ public class CooldownTracker {
         }
     }
 
+    /** 是否处于全局占用（任意 VOX 刚播过） */
+    public static boolean isGloballyLocked(UUID playerUUID, long currentTick) {
+        Long expiry = globalLock.get(playerUUID);
+        return expiry != null && currentTick < expiry;
+    }
+
+    /** 设置全局占用 */
+    public static void setGlobalLock(UUID playerUUID, long currentTick, int lockTicks) {
+        globalLock.put(playerUUID, currentTick + lockTicks);
+    }
+
+    /** 清除全局占用 */
+    public static void clearGlobalLock(UUID playerUUID) {
+        globalLock.remove(playerUUID);
+    }
+
     /** 玩家断线时清理，防止 Map 无限增长 */
     public static void remove(UUID playerUUID) {
         cooldowns.remove(playerUUID);
+        globalLock.remove(playerUUID);
     }
 }
