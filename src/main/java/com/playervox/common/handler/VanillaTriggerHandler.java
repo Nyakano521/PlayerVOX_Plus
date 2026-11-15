@@ -58,7 +58,17 @@ public class VanillaTriggerHandler {
 
     @SubscribeEvent
     public static void onKill(LivingDeathEvent event) {
-        if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
+        Entity sourceEntity = event.getSource().getEntity();
+        ServerPlayer player = null;
+
+        if (sourceEntity instanceof ServerPlayer sp) {
+            player = sp;
+        } else if (sourceEntity instanceof net.minecraft.world.entity.projectile.Projectile projectile
+                && projectile.getOwner() instanceof ServerPlayer sp) {
+            player = sp;
+        }
+
+        if (player == null) return;
         fireForPlayer(player, "kill", event.getSource(), 0, event.getEntity(), null);
     }
 
@@ -100,12 +110,11 @@ public class VanillaTriggerHandler {
     @SubscribeEvent
     public static void onDraw(LivingEquipmentChangeEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        // 只关心主手变化
         if (event.getSlot() != EquipmentSlot.MAINHAND) return;
-        // 空手不触发
         if (event.getTo().isEmpty()) return;
-        // 物品没有实际变化也不触发（防止重复）
-        if (ItemStack.isSameItemSameTags(event.getFrom(), event.getTo())) return;
+
+        // 同一物品类型（忽略 NBT）不触发，避免弩装填等状态变化刷屏
+        if (event.getFrom().getItem() == event.getTo().getItem()) return;
 
         Item item = event.getTo().getItem();
         ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);

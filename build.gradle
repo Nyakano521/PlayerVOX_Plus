@@ -64,6 +64,7 @@ dependencies {
     // TACZ 软依赖，仅编译期使用，不打包进 jar。
     // jar 文件名以实际放入 libs/ 的文件名为准：
     compileOnly fg.deobf(files("libs/tacz-1.20.1.jar"))
+    compileOnly fg.deobf(files("libs/superbwarfare-1.20.1.jar"))
 }
 
 jar {

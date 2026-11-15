@@ -16,6 +16,7 @@ import com.playervox.common.network.PacketSyncVoxSelection;
 import com.playervox.common.radial.RadialRegistry;
 import net.minecraft.network.chat.Component;
 import com.playervox.compat.tacz.TaczCompat;
+import com.playervox.compat.sbw.SbwCompat;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddPackFindersEvent;
@@ -40,6 +41,7 @@ public class PlayerVoxMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static boolean TACZ_LOADED = false;
+    public static boolean SBW_LOADED = false;
 
     public PlayerVoxMod() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -59,6 +61,12 @@ public class PlayerVoxMod {
             TaczCompat.register();
         } else {
             LOGGER.info("PlayerVOX: TACZ not found, gun trigger features disabled.");
+        }
+        SBW_LOADED = ModList.get().isLoaded("superbwarfare");
+        if (SBW_LOADED) {
+            com.playervox.compat.sbw.SbwCompat.register();
+        } else {
+            LOGGER.info("PlayerVOX: Superb Warfare not found, SBW gun triggers disabled.");
         }
     }
 
