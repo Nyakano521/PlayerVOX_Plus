@@ -1,8 +1,8 @@
 本项目为Player VOX的分支，旨在修复原项目存在的bug，以及新增一些新功能
 
-# PlayerVOX
+# PlayerVOX Plus
 
-**PlayerVOX** 是一个 Minecraft Forge 模组，为玩家角色添加语音。语音包创作者通过 JSON 数据文件和 OGG 音频，精确定义角色在何时发声——受伤、击杀、死亡、获得进度等。
+**PlayerVOX Plus** 是一个 Minecraft Forge 模组，为玩家角色添加语音。语音包创作者通过 JSON 数据文件和 OGG 音频，精确定义角色在何时发声——受伤、击杀、死亡、获得进度等。
 
 每位玩家在游戏内独立选择自己的语音包，语音以空间音效播放，附近玩家均可听到。
 
@@ -48,6 +48,9 @@
 
 详细语音包制作与触发器说明请参考原项目 Wiki：  
 [PlayerVOX Wiki](https://github.com/scarls686/PlayerVOX/wiki)
+
+对于本Mod新增的内容，请参考  
+[PlayerVOX Plus Wiki](https://github.com/Nyakano521/PlayerVOX_Plus/wiki)
 
 
 ## 许可证
