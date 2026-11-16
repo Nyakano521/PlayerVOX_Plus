@@ -3,7 +3,7 @@ loaderVersion="[47,)"
 license="MIT"
 
 [[mods]]
-    modId="playervox_plus"
+    modId="playervox"
     version="${file.jarVersion}"
     displayName="PlayerVOX Plus"
     credits="Developed by SCARLS686，contributed by Nyakano521"
