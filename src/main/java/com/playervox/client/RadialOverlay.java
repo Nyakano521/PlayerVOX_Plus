@@ -234,7 +234,7 @@ public class RadialOverlay {
             List<FormattedCharSequence> lines = font.split(label, maxWidth);
             if (lines.size() > 2) lines = lines.subList(0, 2);
 
-            int textColor = (i == hoveredSlotIndex) ? 0xFFFFFF00 : 0xFFC0C0C0;
+            int textColor = (i == hoveredSlotIndex) ? 0xFFFFFF00 : 0xFFFFFFFF;
             int totalTextHeight = lines.size() * (font.lineHeight + 1);
             float startTextY = textY - totalTextHeight / 2f;
 

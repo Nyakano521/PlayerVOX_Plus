@@ -19,5 +19,11 @@
   "playervox.subtitle.vox": "语音",
   "gui.playervox.no_pack": "无语音包",
   "gui.playervox.current_none": "当前未选择语音包",
-  "gui.playervox.current_pack": "当前: %s"
+  "gui.playervox.current_pack": "当前: %s",
+  "gui.playervox.preview": "预览",
+  "gui.playervox.preview_title": "预览：%s",
+  "gui.playervox.preview_tab_general": "一般",
+  "gui.playervox.preview_tab_radial": "轮盘",
+  "gui.playervox.preview_tab_custom": "自定义",
+  "gui.playervox.preview_back": "返回"
 }

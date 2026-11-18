@@ -120,6 +120,7 @@ public class PlayerVoxMod {
         for (String warning : RadialDatapackLoader.drainWarnings()) {
             player.sendSystemMessage(Component.literal(warning));
         }
+        
     }
 
     /** 玩家断线时清理冷却数据 */
@@ -128,4 +129,5 @@ public class PlayerVoxMod {
         CooldownTracker.remove(event.getEntity().getUUID());
         OnceTracker.remove(event.getEntity().getUUID());
     }
+
 }

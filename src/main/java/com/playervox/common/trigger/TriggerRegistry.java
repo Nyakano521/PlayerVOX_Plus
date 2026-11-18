@@ -130,4 +130,17 @@ public class TriggerRegistry {
         if (a == null || b == null) return false;
         return a.toString().equals(b.toString());
     }
+    /** 某语音包下全部触发器定义 */
+    public static List<TriggerDefinition> getAll(String namespace) {
+        return definitionsByNamespace.getOrDefault(namespace, Collections.emptyList());
+    }
+
+    /** 某语音包里出现过的所有 trigger 名（去重） */
+    public static Set<String> getTriggerNames(String namespace) {
+        Set<String> names = new LinkedHashSet<>();
+        for (TriggerDefinition def : getAll(namespace)) {
+            names.add(def.trigger);
+        }
+        return names;
+    }
 }

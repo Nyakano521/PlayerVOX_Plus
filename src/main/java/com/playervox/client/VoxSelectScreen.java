@@ -28,6 +28,7 @@ import java.util.Map;
 public class VoxSelectScreen extends Screen {
 
     private VoxPackList packList;
+    private Button previewButton;
 
     public VoxSelectScreen() {
         super(Component.translatable("gui.playervox.select_pack"));
@@ -65,6 +66,20 @@ public class VoxSelectScreen extends Screen {
                 Component.translatable("gui.playervox.client_settings"),
                 b -> this.minecraft.setScreen(new VoxClientSettingsScreen(this))
         ).pos(this.width - 130, 10).size(120, 20).build());
+        //语音包预览按钮
+        this.previewButton = Button.builder(
+                Component.translatable("gui.playervox.preview"),
+                b -> {
+                    String id = VoxClientState.getSelectedPackId();
+                    if (id != null && !id.isEmpty()) {
+                        this.minecraft.setScreen(new VoxPreviewScreen(this, id));
+                    }
+                }
+        ).pos(this.width - 260, 10).size(120, 20).build();
+        this.addRenderableWidget(this.previewButton);
+
+        String selected = VoxClientState.getSelectedPackId();
+        this.previewButton.active = selected != null && !selected.isEmpty();
     }
 
     @Override
@@ -93,6 +108,9 @@ public class VoxSelectScreen extends Screen {
     private void selectPack(String packId) {
         NetworkHandler.INSTANCE.sendToServer(new PacketSelectVoxPack(packId));
         VoxClientState.setSelectedPack(packId);
+        if (this.previewButton != null) {
+            this.previewButton.active = packId != null && !packId.isEmpty();
+        }
     }
 
     // ---- 内部类：列表 ----
