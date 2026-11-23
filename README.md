@@ -52,6 +52,8 @@
 对于本Mod新增的内容，请参考  
 [PlayerVOX Plus Wiki](https://github.com/Nyakano521/PlayerVOX_Plus/wiki)
 
+推荐使用本项目的语音包编辑工具，方便且高效地制作语音包  
+下载：[Release](https://github.com/Nyakano521/PlayerVOX_Plus/releases/tag/voicepack_studio)
 
 ## 许可证
 
