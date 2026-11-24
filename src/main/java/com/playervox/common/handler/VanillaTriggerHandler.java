@@ -52,6 +52,9 @@ public class VanillaTriggerHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        // PlayerRevive 把首次死亡改成倒地并 cancel 时，不要播 death
+        if (event.isCanceled()) return;
+
         CooldownTracker.clearCooldown(player.getUUID(), "low_health");
         fireForPlayer(player, "death", event.getSource(), 0, null, null);
     }
@@ -242,10 +245,9 @@ public class VanillaTriggerHandler {
 
         long currentTick = player.level().getGameTime();
 
-// death 拥有特权，可打断全局占用；其他触发器在占用期间直接忽略
-        boolean isDeath = "death".equals(trigger);
-        if (!isDeath && CooldownTracker.isGloballyLocked(player.getUUID(), currentTick)) return;
-
+// death与pr_downed 拥有特权，可打断全局占用；其他触发器在占用期间直接忽略
+        boolean bypassGlobalLock = "death".equals(trigger) || "pr_downed".equals(trigger);
+        if (!bypassGlobalLock && CooldownTracker.isGloballyLocked(player.getUUID(), currentTick)) return;
         if (CooldownTracker.isOnCooldown(player.getUUID(), trigger, currentTick)) return;
 
         TriggerEvaluator.Result result = TriggerEvaluator.evaluate(

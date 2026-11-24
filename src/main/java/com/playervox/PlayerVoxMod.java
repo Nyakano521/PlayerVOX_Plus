@@ -42,6 +42,7 @@ public class PlayerVoxMod {
 
     public static boolean TACZ_LOADED = false;
     public static boolean SBW_LOADED = false;
+    public static boolean PLAYERREVIVE_LOADED = false;
 
     public PlayerVoxMod() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -67,6 +68,13 @@ public class PlayerVoxMod {
             com.playervox.compat.sbw.SbwCompat.register();
         } else {
             LOGGER.info("PlayerVOX: Superb Warfare not found, SBW gun triggers disabled.");
+        }
+
+        PLAYERREVIVE_LOADED = ModList.get().isLoaded("playerrevive");
+        if (PLAYERREVIVE_LOADED) {
+            com.playervox.compat.playerrevive.PlayerReviveCompat.register();
+        } else {
+            LOGGER.info("PlayerVOX: PlayerRevive not found, pr_downed / pr_revived disabled.");
         }
     }
 

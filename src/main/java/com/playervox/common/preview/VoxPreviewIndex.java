@@ -30,7 +30,7 @@ public final class VoxPreviewIndex {
             "hurt", "death", "kill", "low_health", "fall",
             "login", "respawn", "sleep", "pickup", "advancement", "draw",
             "tacz_shoot", "tacz_reload", "tacz_draw", "tacz_melee", "tacz_kill",
-            "sbw_reload", "sbw_shoot"
+            "sbw_reload", "sbw_shoot","pr_downed", "pr_revived"
     );
 
     private static final Set<String> GENERAL_SET = new LinkedHashSet<>(GENERAL_TRIGGERS);

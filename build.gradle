@@ -65,6 +65,8 @@ dependencies {
     // jar 文件名以实际放入 libs/ 的文件名为准：
     compileOnly fg.deobf(files("libs/tacz-1.20.1.jar"))
     compileOnly fg.deobf(files("libs/superbwarfare-1.20.1.jar"))
+    compileOnly fg.deobf(files("libs/playerrevive-1.20.1.jar"))
+    compileOnly fg.deobf(files("libs/creativecore-1.20.1.jar"))
 }
 
 jar {
